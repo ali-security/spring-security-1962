@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -132,6 +133,29 @@ public class SecurityExpressionRootTests {
 		assertThat(this.root.hasAuthority("A")).isFalse();
 		assertThat(this.root.hasAnyAuthority("NO", "A")).isFalse();
 		assertThat(this.root.hasAnyAuthority("ROLE_A", "NOT")).isTrue();
+	}
+
+	@Test
+	void isAuthenticatedWhenAuthenticatedNullThenException() {
+		this.root = new SecurityExpressionRoot((Authentication) null) {
+		};
+		assertThat(assertThatThrownBy(() -> this.root.isAuthenticated())).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void isAuthenticatedWhenTrustResolverFalseThenFalse() {
+		AuthenticationTrustResolver atr = mock(AuthenticationTrustResolver.class);
+		given(atr.isAuthenticated(JOE)).willReturn(false);
+		this.root.setTrustResolver(atr);
+		assertThat(this.root.isAuthenticated()).isFalse();
+	}
+
+	@Test
+	void isAuthenticatedWhenTrustResolverTrueThenTrue() {
+		AuthenticationTrustResolver atr = mock(AuthenticationTrustResolver.class);
+		given(atr.isAuthenticated(JOE)).willReturn(true);
+		this.root.setTrustResolver(atr);
+		assertThat(this.root.isAuthenticated()).isTrue();
 	}
 
 }

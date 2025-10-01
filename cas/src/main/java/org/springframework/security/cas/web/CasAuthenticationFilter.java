@@ -195,6 +195,8 @@ public class CasAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 	private SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
+	private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+
 	public CasAuthenticationFilter() {
 		super("/login/cas");
 		setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler());
@@ -331,8 +333,7 @@ public class CasAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	 */
 	private boolean authenticated() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication != null && authentication.isAuthenticated()
-				&& !(authentication instanceof AnonymousAuthenticationToken);
+		return this.trustResolver.isAuthenticated(authentication);
 	}
 
 	/**

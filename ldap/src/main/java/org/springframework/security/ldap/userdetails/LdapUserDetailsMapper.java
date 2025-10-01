@@ -1,5 +1,5 @@
 /*
- * Copyright 2004, 2005, 2006 Acegi Technology Pty Limited
+ * Copyright 2004-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.security.ldap.userdetails;
 
 import java.util.Collection;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -127,7 +128,7 @@ public class LdapUserDetailsMapper implements UserDetailsContextMapper {
 	protected GrantedAuthority createAuthority(Object role) {
 		if (role instanceof String) {
 			if (this.convertToUpperCase) {
-				role = ((String) role).toUpperCase();
+				role = ((String) role).toUpperCase(Locale.ROOT);
 			}
 			return new SimpleGrantedAuthority(this.rolePrefix + role);
 		}

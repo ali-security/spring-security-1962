@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +79,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -304,7 +306,8 @@ public class SessionManagementConfigurerTests {
 	@Test
 	public void getWhenAnonymousRequestAndTrustResolverSharedObjectReturnsAnonymousFalseThenSessionIsSaved()
 			throws Exception {
-		SharedTrustResolverConfig.TR = mock(AuthenticationTrustResolver.class);
+		SharedTrustResolverConfig.TR = mock(AuthenticationTrustResolver.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(SharedTrustResolverConfig.TR.isAnonymous(any())).willReturn(false);
 		this.spring.register(SharedTrustResolverConfig.class).autowire();
 		MvcResult mvcResult = this.mvc.perform(get("/")).andReturn();
